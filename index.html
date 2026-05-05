@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="名刺帳">
+<meta name="theme-color" content="#1f1f1f">
+<title>名刺帳 × 挨拶メール</title>
+
+<!-- Inline manifest -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"名刺帳 × 挨拶メール","short_name":"名刺帳","start_url":".","display":"standalone","background_color":"%23f6f5f0","theme_color":"%231f1f1f","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%231f1f1f%22/><rect x=%2236%22 y=%2256%22 width=%22120%22 height=%2280%22 rx=%228%22 fill=%22white%22/><circle cx=%2266%22 cy=%2290%22 r=%2212%22 fill=%22%231f1f1f%22/><rect x=%2290%22 y=%2282%22 width=%2250%22 height=%226%22 rx=%223%22 fill=%22%231f1f1f%22/><rect x=%2290%22 y=%2294%22 width=%2236%22 height=%224%22 rx=%222%22 fill=%22%23999%22/><rect x=%2250%22 y=%22112%22 width=%2290%22 height=%224%22 rx=%222%22 fill=%22%23ccc%22/></svg>","sizes":"192x192","type":"image/svg+xml"}]}'>
+
+<!-- Inline icon for iOS home screen -->
+<link rel="apple-touch-icon" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="%231f1f1f"/><rect x="36" y="56" width="120" height="80" rx="8" fill="white"/><circle cx="66" cy="90" r="12" fill="%231f1f1f"/><rect x="90" y="82" width="50" height="6" rx="3" fill="%231f1f1f"/><rect x="90" y="94" width="36" height="4" rx="2" fill="%23999"/><rect x="50" y="112" width="90" height="4" rx="2" fill="%23ccc"/></svg>'>
+
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif; background: #f6f5f0; color: #1f1f1f; font-size: 15px; line-height: 1.6; padding-bottom: env(safe-area-inset-bottom); }
+.app { max-width: 480px; margin: 0 auto; padding: 12px 12px 80px; }
+
+header { display: flex; align-items: center; justify-content: space-between; margin: 4px 4px 12px; padding-top: env(safe-area-inset-top); }
+h1 { font-size: 18px; font-weight: 600; margin: 0; }
+.brand-icon { width: 28px; height: 28px; border-radius: 7px; background: #1f1f1f; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; margin-right: 8px; vertical-align: middle; }
+
+.tabs { display: flex; gap: 4px; background: #fff; border-radius: 10px; padding: 4px; border: 0.5px solid rgba(0,0,0,0.1); margin-bottom: 14px; }
+.tab { flex: 1; padding: 9px; text-align: center; font-size: 13px; cursor: pointer; border-radius: 7px; color: #5f5e5a; }
+.tab.active { background: #1f1f1f; color: #fff; font-weight: 500; }
+
+.card { background: #fff; border-radius: 12px; border: 0.5px solid rgba(0,0,0,0.08); padding: 12px 14px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+.av-blue { background: #E6F1FB; color: #0C447C; }
+.av-teal { background: #E1F5EE; color: #085041; }
+.av-purple { background: #EEEDFE; color: #3C3489; }
+.av-coral { background: #FAECE7; color: #712B13; }
+.av-pink { background: #FBEAF0; color: #72243E; }
+.av-amber { background: #FAEEDA; color: #854F0B; }
+.contact-meta { flex: 1; min-width: 0; }
+.contact-name { font-weight: 600; font-size: 15px; margin: 0; }
+.contact-sub { font-size: 12px; color: #5f5e5a; margin: 2px 0 0; word-break: break-all; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #f1efe8; color: #444441; margin-right: 4px; }
+.tag.t-biz { background: #E6F1FB; color: #0C447C; }
+.tag.t-event { background: #EEEDFE; color: #3C3489; }
+.tag.t-internal { background: #E1F5EE; color: #085041; }
+.tag.t-eng { background: #FAECE7; color: #712B13; }
+
+.card-actions { display: flex; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid rgba(0,0,0,0.06); }
+.card-actions .btn { flex: 1; }
+
+.btn { font-size: 13px; padding: 9px 14px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; cursor: pointer; font-family: inherit; -webkit-appearance: none; touch-action: manipulation; min-height: 36px; }
+.btn:active { transform: scale(0.98); }
+.btn.primary { background: #1f1f1f; color: #fff; border-color: #1f1f1f; font-weight: 500; }
+.btn.danger { color: #791F1F; }
+.btn.small { font-size: 12px; padding: 7px 10px; min-height: 32px; }
+.btn.ghost { border-color: transparent; background: transparent; color: #5f5e5a; }
+
+.section-head { font-size: 11px; color: #5f5e5a; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 4px 8px; }
+
+.add-card { padding: 12px; border: 0.5px dashed rgba(0,0,0,0.2); border-radius: 12px; background: #fff; }
+.add-card.collapsed { padding: 0; border: none; background: transparent; }
+.field-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 8px; }
+input, select, textarea { width: 100%; font-family: inherit; font-size: 16px; padding: 10px 12px; border-radius: 8px; border: 0.5px solid rgba(0,0,0,0.15); background: #fff; -webkit-appearance: none; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #1f1f1f; }
+select { background: #fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%23666' d='M4 6l4 4 4-4z'/></svg>") no-repeat right 10px center; padding-right: 30px; }
+textarea { resize: vertical; min-height: 130px; line-height: 1.6; }
+label.f { display: block; font-size: 11px; color: #5f5e5a; margin-bottom: 4px; }
+
+.toolbar { display: flex; gap: 8px; margin-bottom: 8px; }
+.search { flex: 1; }
+
+/* Templates */
+.tpl-list { display: flex; flex-direction: column; gap: 10px; }
+.tpl-item { background: #fff; border: 0.5px solid rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden; }
+.tpl-head { padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.tpl-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 13px; flex-shrink: 0; }
+.tpl-name { flex: 1; font-weight: 500; font-size: 14px; }
+.tpl-default { font-size: 10px; padding: 2px 7px; border-radius: 999px; background: #E6F1FB; color: #0C447C; }
+.tpl-body { padding: 0 14px 14px; display: none; border-top: 0.5px solid rgba(0,0,0,0.06); }
+.tpl-body.open { display: block; padding-top: 12px; }
+.var-row { margin: 8px 0 0; display: flex; gap: 6px; flex-wrap: wrap; }
+.var-chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: #EEEDFE; color: #3C3489; cursor: pointer; }
+
+/* Modal */
+.modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: flex-end; justify-content: center; z-index: 100; }
+.modal { background: #fff; border-radius: 16px 16px 0 0; max-width: 480px; width: 100%; max-height: 92vh; overflow-y: auto; padding-bottom: env(safe-area-inset-bottom); }
+.modal-head { padding: 14px 16px; border-bottom: 0.5px solid rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: #fff; }
+.modal-title { font-weight: 600; font-size: 15px; }
+.modal-body { padding: 14px 16px; }
+.modal-foot { padding: 12px 16px; border-top: 0.5px solid rgba(0,0,0,0.08); display: flex; gap: 8px; justify-content: flex-end; align-items: center; background: #faf9f5; position: sticky; bottom: 0; }
+.foot-info { font-size: 11px; color: #5f5e5a; flex: 1; }
+.tpl-picker { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.tpl-pick { font-size: 12px; padding: 7px 11px; border-radius: 999px; background: #f1efe8; color: #444441; border: 0.5px solid transparent; cursor: pointer; }
+.tpl-pick.active { background: #1f1f1f; color: #fff; border-color: #1f1f1f; }
+.preview-meta { font-size: 12px; color: #5f5e5a; margin-bottom: 6px; }
+.preview-meta b { color: #1f1f1f; font-weight: 500; }
+
+/* Toast */
+.toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f1f1f; color: #fff; padding: 10px 20px; border-radius: 999px; font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.2s; pointer-events: none; max-width: 90%; }
+.toast.show { opacity: 1; }
+.toast.error { background: #791F1F; }
+
+/* FAB */
+.fab { position: fixed; right: 20px; bottom: calc(20px + env(safe-area-inset-bottom)); width: 56px; height: 56px; border-radius: 50%; background: #1f1f1f; color: #fff; font-size: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 50; border: none; }
+.fab:active { transform: scale(0.95); }
+.empty { text-align: center; color: #5f5e5a; padding: 32px 16px; font-size: 13px; }
+
+/* Install hint */
+.install-hint { background: #E6F1FB; color: #0C447C; padding: 10px 12px; border-radius: 10px; font-size: 12px; margin-bottom: 12px; display: none; }
+.install-hint.show { display: flex; align-items: center; gap: 8px; }
+.install-hint .close { margin-left: auto; cursor: pointer; opacity: 0.7; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <h1><span class="brand-icon">名</span>名刺帳</h1>
+  <span style="font-size:11px;color:#5f5e5a;">挨拶メール準備</span>
+</header>
+
+<div id="install-hint" class="install-hint">
+  <span>📱 ホーム画面に追加すると、アプリのように使えます</span>
+  <span class="close" id="hint-close">×</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="cards">名刺</div>
+  <div class="tab" data-tab="templates">テンプレート</div>
+</div>
+
+<!-- ===== Cards tab ===== -->
+<div class="tab-pane" id="pane-cards">
+  <div class="toolbar">
+    <input class="search" id="search" placeholder="名前・会社名で検索">
+  </div>
+  <div id="card-list" style="margin-top: 8px;"></div>
+</div>
+
+<!-- ===== Templates tab ===== -->
+<div class="tab-pane" id="pane-templates" style="display:none;">
+  <div class="section-head">{{変数}} を本文に差し込めます</div>
+  <div class="tpl-list" id="tpl-list"></div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" aria-label="追加">+</button>
+
+<!-- Add modal placeholder -->
+<div id="modal-bg" style="display:none;"></div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+const STORAGE = 'card-mailer-pwa-v1';
+const TAG_LABELS = { biz: '取引先', event: '勉強会', internal: '社内', eng: '英語' };
+const TAG_TO_TPL = { biz: 'biz', event: 'event', internal: 'internal', eng: 'eng' };
+const COLOR_BY_TAG = { biz: 'av-blue', event: 'av-purple', internal: 'av-teal', eng: 'av-coral' };
+
+const DEFAULT_CARDS = [
+  { id: 'c1', name: '山田 太郎', company: '株式会社アンソロピック', role: '営業部長', email: 'taro.yamada@example.com', tag: 'biz', place: '2026年5月 IT展示会', avatar: 'av-blue' },
+  { id: 'c2', name: '佐藤 花子', company: 'クロード商事', role: 'マーケ担当', email: 'hanako@example.com', tag: 'biz', place: '2026年4月 商談会', avatar: 'av-teal' },
+  { id: 'c3', name: '鈴木 健一', company: '合同会社ソネット', role: 'CTO', email: 'k.suzuki@example.com', tag: 'event', place: '技術勉強会', avatar: 'av-purple' },
+];
+
+const DEFAULT_TEMPLATES = [
+  { id: 'biz', name: '取引先・ビジネス用', icon: '取', color: 'av-blue', isDefault: true,
+    subject: '本日はありがとうございました（{{会社名}} {{氏名}}様）',
+    body: '{{氏名}} 様\n\n本日はお時間をいただきありがとうございました。\n{{会社名}}の{{役職}}としてのお話、大変参考になりました。\n\n今後ともどうぞよろしくお願いいたします。\n\n———\nたいち' },
+  { id: 'event', name: '勉強会・カジュアル用', icon: '勉', color: 'av-purple',
+    subject: '今日のイベントでお話できて嬉しかったです！',
+    body: '{{氏名}} さん\n\n今日の勉強会、お疲れさまでした！\n{{会社名}}での{{役職}}のお話、とても刺激になりました。\n\nまた {{出会った場所}} あたりで集まる機会があれば、ぜひ声をかけてください。\n\nたいち' },
+  { id: 'internal', name: '社内・新メンバー用', icon: '社', color: 'av-teal',
+    subject: 'はじめまして、たいちです',
+    body: '{{氏名}} さん\n\nはじめまして、たいちです。\n本日は名刺交換ありがとうございました。\n\nSlackでも繋がれたら嬉しいです。\nよろしくお願いします！\n\nたいち' },
+  { id: 'eng', name: '英語・海外取引先用', icon: '英', color: 'av-coral',
+    subject: 'Great to meet you today',
+    body: 'Hi {{氏名}},\n\nIt was a pleasure meeting you at {{出会った場所}}.\nI enjoyed hearing about your work as {{役職}} at {{会社名}}.\n\nLet\'s stay in touch.\n\nBest,\nTaichi' },
+];
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed.cards && parsed.templates) return parsed;
+    }
+  } catch (e) {}
+  return { cards: DEFAULT_CARDS, templates: DEFAULT_TEMPLATES };
+}
+function saveState() { localStorage.setItem(STORAGE, JSON.stringify(state)); }
+
+// Tabs
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const which = t.dataset.tab;
+    document.getElementById('pane-cards').style.display = which === 'cards' ? '' : 'none';
+    document.getElementById('pane-templates').style.display = which === 'templates' ? '' : 'none';
+    document.getElementById('fab').style.display = which === 'cards' ? '' : 'none';
+  });
+});
+
+function avatarInitial(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length > 1 && /^[A-Za-z]/.test(parts[0])) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return name.slice(0, 2);
+}
+
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+
+function renderCards() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const list = document.getElementById('card-list');
+  const filtered = state.cards.filter(c =>
+    !q || c.name.toLowerCase().includes(q) || (c.company || '').toLowerCase().includes(q));
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty">該当する名刺がありません<br><small>右下の + から追加できます</small></div>';
+    return;
+  }
+  list.innerHTML = filtered.map(c => `
+    <div class="card">
+      <div class="row">
+        <div class="avatar ${c.avatar || 'av-blue'}">${escapeHtml(avatarInitial(c.name))}</div>
+        <div class="contact-meta">
+          <p class="contact-name">${escapeHtml(c.name)}</p>
+          <p class="contact-sub">${escapeHtml(c.company || '')}${c.role ? ' / ' + escapeHtml(c.role) : ''}</p>
+          <p class="contact-sub" style="margin-top:3px;">${escapeHtml(c.email || '')}</p>
+          <div style="margin-top:6px;"><span class="tag t-${c.tag}">${TAG_LABELS[c.tag] || c.tag}</span></div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="btn small" data-edit="${c.id}">編集</button>
+        <button class="btn small danger" data-del="${c.id}">削除</button>
+        <button class="btn primary small" data-send="${c.id}">挨拶メール ✉</button>
+      </div>
+    </div>
+  `).join('');
+  list.querySelectorAll('[data-send]').forEach(b => b.addEventListener('click', () => openSendModal(b.dataset.send)));
+  list.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openCardModal(b.dataset.edit)));
+  list.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => {
+    if (confirm('この名刺を削除しますか？')) {
+      state.cards = state.cards.filter(x => x.id !== b.dataset.del);
+      saveState(); renderCards();
+    }
+  }));
+}
+
+document.getElementById('search').addEventListener('input', renderCards);
+
+// FAB → add new card
+document.getElementById('fab').addEventListener('click', () => openCardModal(null));
+
+function openCardModal(cardId) {
+  const editing = cardId ? state.cards.find(c => c.id === cardId) : null;
+  const c = editing || { name: '', company: '', role: '', email: '', tag: 'biz', place: '' };
+  const bg = document.getElementById('modal-bg');
+  bg.style.display = '';
+  bg.classList.add('modal-bg');
+  bg.innerHTML = `
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div class="modal-title">${editing ? '名刺を編集' : '名刺を追加'}</div>
+        <button class="btn ghost" data-close>×</button>
+      </div>
+      <div class="modal-body">
+        <div class="field-grid">
+          <div><label class="f">氏名 *</label><input id="cf-name" value="${escapeHtml(c.name)}" placeholder="山田 太郎"></div>
+          <div><label class="f">会社名</label><input id="cf-company" value="${escapeHtml(c.company)}" placeholder="株式会社◯◯"></div>
+          <div><label class="f">役職</label><input id="cf-role" value="${escapeHtml(c.role)}" placeholder="営業部長"></div>
+          <div><label class="f">メールアドレス *</label><input id="cf-email" type="email" inputmode="email" value="${escapeHtml(c.email)}" placeholder="taro@example.com"></div>
+          <div><label class="f">タグ</label>
+            <select id="cf-tag">
+              ${Object.entries(TAG_LABELS).map(([k,v]) => `<option value="${k}" ${c.tag===k?'selected':''}>${v}</option>`).join('')}
+            </select>
+          </div>
+          <div><label class="f">出会った場所・きっかけ</label><input id="cf-place" value="${escapeHtml(c.place)}" placeholder="2026年5月 ◯◯展示会"></div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <span class="foot-info">${editing ? '編集中' : '新規追加'}</span>
+        <button class="btn" data-close>キャンセル</button>
+        <button class="btn primary" id="cf-save">保存</button>
+      </div>
+    </div>`;
+  bg.onclick = (e) => { if (e.target === bg) closeModal(); };
+  bg.querySelectorAll('[data-close]').forEach(b => b.onclick = closeModal);
+  document.getElementById('cf-save').onclick = () => {
+    const name = document.getElementById('cf-name').value.trim();
+    const email = document.getElementById('cf-email').value.trim();
+    if (!name || !email) { showToast('氏名とメールは必須です', true); return; }
+    const tag = document.getElementById('cf-tag').value;
+    const data = {
+      id: editing ? editing.id : 'c' + Date.now(),
+      name, email, tag,
+      company: document.getElementById('cf-company').value.trim(),
+      role: document.getElementById('cf-role').value.trim(),
+      place: document.getElementById('cf-place').value.trim(),
+      avatar: COLOR_BY_TAG[tag] || 'av-blue',
+    };
+    if (editing) {
+      const idx = state.cards.findIndex(x => x.id === editing.id);
+      state.cards[idx] = data;
+    } else {
+      state.cards.unshift(data);
+    }
+    saveState(); renderCards(); closeModal();
+    showToast(editing ? '保存しました' : '名刺を追加しました');
+  };
+}
+
+function renderTemplates() {
+  const list = document.getElementById('tpl-list');
+  list.innerHTML = state.templates.map(t => `
+    <div class="tpl-item" data-tid="${t.id}">
+      <div class="tpl-head" data-toggle="${t.id}">
+        <div class="tpl-icon ${t.color}">${escapeHtml(t.icon)}</div>
+        <div class="tpl-name">${escapeHtml(t.name)}</div>
+        ${t.isDefault ? '<span class="tpl-default">デフォルト</span>' : ''}
+        <span style="color:#5f5e5a;font-size:18px;">›</span>
+      </div>
+      <div class="tpl-body">
+        <label class="f">件名</label>
+        <input data-edit="subject" data-tid="${t.id}" value="${escapeHtml(t.subject)}" style="margin-bottom:10px;">
+        <label class="f">本文</label>
+        <textarea data-edit="body" data-tid="${t.id}">${escapeHtml(t.body)}</textarea>
+        <div class="var-row">
+          ${['{{氏名}}','{{会社名}}','{{役職}}','{{出会った場所}}'].map(v => `<span class="var-chip" data-insert="${escapeHtml(v)}" data-tid="${t.id}">${escapeHtml(v)}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `).join('');
+  list.querySelectorAll('[data-toggle]').forEach(h => h.addEventListener('click', () => {
+    h.closest('.tpl-item').querySelector('.tpl-body').classList.toggle('open');
+  }));
+  list.querySelectorAll('[data-edit]').forEach(el => el.addEventListener('input', () => {
+    const t = state.templates.find(x => x.id === el.dataset.tid);
+    if (t) { t[el.dataset.edit] = el.value; saveState(); }
+  }));
+  list.querySelectorAll('[data-insert]').forEach(chip => chip.addEventListener('click', () => {
+    const ta = document.querySelector(`textarea[data-edit="body"][data-tid="${chip.dataset.tid}"]`);
+    const v = chip.dataset.insert;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    ta.value = ta.value.slice(0, start) + v + ta.value.slice(end);
+    ta.selectionStart = ta.selectionEnd = start + v.length;
+    ta.focus();
+    const t = state.templates.find(x => x.id === chip.dataset.tid);
+    if (t) { t.body = ta.value; saveState(); }
+  }));
+}
+
+function fillTemplate(tpl, card) {
+  const map = { '氏名': card.name, '会社名': card.company || '', '役職': card.role || '', '出会った場所': card.place || '', '出会った日': new Date().toLocaleDateString('ja-JP') };
+  const sub = (s) => s.replace(/\{\{(.+?)\}\}/g, (_, k) => map[k.trim()] ?? '');
+  return { subject: sub(tpl.subject), body: sub(tpl.body) };
+}
+
+let currentSend = null;
+function openSendModal(cardId) {
+  const card = state.cards.find(c => c.id === cardId);
+  if (!card) return;
+  currentSend = { card, tplId: TAG_TO_TPL[card.tag] || 'biz' };
+  renderSendModal();
+}
+
+function renderSendModal() {
+  const { card, tplId } = currentSend;
+  const tpl = state.templates.find(t => t.id === tplId) || state.templates[0];
+  const filled = fillTemplate(tpl, card);
+  const bg = document.getElementById('modal-bg');
+  bg.style.display = '';
+  bg.classList.add('modal-bg');
+  bg.innerHTML = `
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head">
+        <div class="modal-title">挨拶メールを準備</div>
+        <button class="btn ghost" data-close>×</button>
+      </div>
+      <div class="modal-body">
+        <div class="preview-meta"><b>宛先:</b> ${escapeHtml(card.email)}</div>
+        <div class="preview-meta" style="margin-bottom:10px;"><b>名前:</b> ${escapeHtml(card.name)} (${escapeHtml(TAG_LABELS[card.tag] || card.tag)})</div>
+        <label class="f">テンプレート</label>
+        <div class="tpl-picker">
+          ${state.templates.map(t => `<span class="tpl-pick ${t.id === tplId ? 'active' : ''}" data-tpl="${t.id}">${escapeHtml(t.icon)} ${escapeHtml(t.name)}</span>`).join('')}
+        </div>
+        <label class="f">件名</label>
+        <input id="m-subject" value="${escapeHtml(filled.subject)}" style="margin-bottom:10px;">
+        <label class="f">本文</label>
+        <textarea id="m-body" style="min-height:200px;">${escapeHtml(filled.body)}</textarea>
+      </div>
+      <div class="modal-foot">
+        <span class="foot-info">メールアプリで開きます</span>
+        <button class="btn" data-close>キャンセル</button>
+        <button class="btn primary" id="m-send">メールを開く</button>
+      </div>
+    </div>`;
+  bg.onclick = (e) => { if (e.target === bg) closeModal(); };
+  bg.querySelectorAll('[data-close]').forEach(b => b.onclick = closeModal);
+  document.querySelectorAll('.tpl-pick').forEach(p => p.onclick = () => { currentSend.tplId = p.dataset.tpl; renderSendModal(); });
+  document.getElementById('m-send').onclick = openMailto;
+}
+
+function openMailto() {
+  const { card } = currentSend;
+  const subject = document.getElementById('m-subject').value;
+  const body = document.getElementById('m-body').value;
+  const url = 'mailto:' + encodeURIComponent(card.email)
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(body);
+  window.location.href = url;
+  setTimeout(() => { closeModal(); showToast('メールアプリを開きました ✓'); }, 300);
+}
+
+function closeModal() {
+  document.getElementById('modal-bg').style.display = 'none';
+  document.getElementById('modal-bg').innerHTML = '';
+  currentSend = null;
+}
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('error', !!isError);
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+// Install hint (show on iOS Safari, hide if standalone)
+function checkInstallHint() {
+  const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  const dismissed = localStorage.getItem(STORAGE + '_hint_dismissed');
+  if (!isStandalone && !dismissed) {
+    document.getElementById('install-hint').classList.add('show');
+  }
+}
+document.getElementById('hint-close').addEventListener('click', () => {
+  document.getElementById('install-hint').classList.remove('show');
+  localStorage.setItem(STORAGE + '_hint_dismissed', '1');
+});
+
+renderCards();
+renderTemplates();
+checkInstallHint();
+</script>
+</body>
+</html>
